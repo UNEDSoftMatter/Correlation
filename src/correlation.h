@@ -10,13 +10,31 @@
  * Purpose    : Headers for correlation.c
  *
  */
+#ifndef HEADER_SEEN
 
+#define HEADER_SEEN
+
+/* #############################################################################
+#  Shared functions 
+############################################################################# */
+
+#include <fftw3.h>
+#include <string.h>
+#include <math.h>
+#include <complex.h>
 #include <stdio.h>
 #include <time.h>
-#include <string.h>
-#include <complex.h>
-#include <fftw3.h>
+#include <gsl/gsl_blas.h>
+#include <gsl/gsl_complex.h>
+#include <gsl/gsl_complex_math.h>
 #include <gsl/gsl_matrix.h>
+#include <gsl/gsl_vector.h>
+
+/* #############################################################################
+#  Parameters of the simulation 
+############################################################################# */
+
+#include "params.h"
 
 /* #############################################################################
 #  IO functions that appears in io.c 
@@ -33,3 +51,5 @@ void PrintInitInfo(void);
 // Check if the user enters argv[1]
 
 int CheckInput(int argc);
+
+#endif

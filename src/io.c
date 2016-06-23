@@ -3,14 +3,13 @@
  *
  * Created    : 09.05.2016
  *
- * Modified   : mar 10 may 2016 12:54:55 CEST
+ * Modified   : jue 23 jun 2016 16:56:03 CEST
  *
  * Author     : jatorre
  *
  * Purpose    : IO functions for correlation.c 
  *
  */
-
 #include "correlation.h"
 
 void PrintMsg(char *msg)
@@ -34,7 +33,7 @@ void PrintInitInfo(void)
   printf("#                                                                            #\n");
   printf("##############################################################################\n");
   printf("#                                                                            #\n");
-  printf("# The input matrix should be at data/$1 in matrixform                        #\n");
+  printf("# The input matrix should be at $1 in matrixform                             #\n");
   printf("#                                                                            #\n");
   printf("##############################################################################\n");
   printf("#                                                                            #\n");

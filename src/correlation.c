@@ -3,84 +3,161 @@
  *
  * Created    : 09.05.2016
  *
- * Modified   : vie 20 may 2016 19:17:36 CEST
+ * Modified   : jue 23 jun 2016 17:54:05 CEST
  *
  * Author     : jatorre
  *
  * Purpose    : To compute correlations 
  *
  */
-
 #include "correlation.h"
-#include "params.h"
 
 int main(int argc, char * argv[])
 {
   PrintInitInfo();
 
-  // Checkpoint: We need an input filename
-  if (CheckInput(argc))
-    return 1;
+  PrintMsg("INIT");
+
+  //   // Checkpoint: We need an input filename
+  //   if (CheckInput(argc))
+  //     return 1;
 
   char str[100]; 
-  char * filestr = argv[1];
+  memset(str, '\0',sizeof(str));
+
+  // char * filestr = argv[1];
   
   PrintMsg("INIT");
   
-  gsl_matrix * Input  = gsl_matrix_calloc (NRows,NCols);
+  gsl_matrix *   iMatrix  = gsl_matrix_calloc (NSteps,NNodes);
+  gsl_matrix * CCFMatrix  = gsl_matrix_calloc (NSteps,NNodes*NNodes);
   
-  FILE *iFile;
   PrintMsg("Reading input matrix");
-  strcpy (str, "./data/");
-  strcat (str, filestr);
+  sprintf(str, "./%s", iFileStr);
   printf("\tInput file: %s\n", str);
-  iFile = fopen(str, "r");
-    gsl_matrix_fscanf(iFile, Input);
+  FILE *iFile;
+    iFile = fopen(str, "r");
+    gsl_matrix_fscanf(iFile,iMatrix);
   fclose(iFile);
 
-  for (int mu=0;mu<NCols;mu++)
+  // Define auxiliar vectors needed to perform DFT
+  gsl_vector * v1   = gsl_vector_calloc(NSteps);
+  gsl_vector * v2   = gsl_vector_calloc(NSteps);
+  gsl_vector * v3   = gsl_vector_calloc(NSteps);
+
+  // Define auxiliar complex vectors needed to perform DFT
+  // Also set to zero all the elements
+  //
+  // fftw_complex *out is a struct where
+  // out[0] is the real part
+  // out[1] is the imaginary part
+  // Eg.: Real part of element i can be accessed with out[i][0]
+  fftw_complex *out1;
+  out1 = (fftw_complex *)fftw_malloc(sizeof (fftw_complex)*NSteps);
+  memset(out1,0,sizeof (fftw_complex)*NSteps);
+
+  fftw_complex *out2;
+  out2 = (fftw_complex *)fftw_malloc(sizeof (fftw_complex)*NSteps);
+  memset(out2,0,sizeof (fftw_complex)*NSteps); 
+  
+  fftw_complex *out3;
+  out3 = (fftw_complex *)fftw_malloc(sizeof (fftw_complex)*NSteps);
+  memset(out3,0,sizeof (fftw_complex)*NSteps); 
+
+  // LOOP OVER ALL MU-COLUMNS
+  for (int mu=0;mu<NNodes;mu++)
   {
-    gsl_vector_view imu = gsl_matrix_column(Input,mu);
-    out1 = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * NRows);
-    pin1 = fftw_plan_dft_r2c_1d(NRows, &imu.vector->data, out1, flags);
+    // Prepare a plan to perform a DFT from V1 vector to OUT1 complex vector
+    fftw_plan pin1 = fftw_plan_dft_r2c_1d(NSteps, v1->data, out1, FFTW_MEASURE);
+    memset(out1,0,sizeof (fftw_complex)*NSteps); 
+
+    // Select the proper column and perform the current plan
+    gsl_vector_view MuCol = gsl_matrix_column(iMatrix,mu);
+    gsl_vector_memcpy(v1,&MuCol.vector);
     fftw_execute(pin1);
-    for (int nu=0;nu<NCols;nu++)
+   
+    // LOOP AGAIN OVER ALL NU-COLUMNS
+    for (int nu=0;nu<NNodes;nu++)
     {
-      gsl_vector_view inu = gsl_matrix_column(Input,nu);
-  
-      out2 = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * NRows);
-      //pin2 = fftw_plan_dft_r2c_1d(int N, double *in2, fftw_complex *out2, unsigned flags);
-      pin2 = fftw_plan_dft_r2c_1d(NRows, &inu.vector->data, out2, flags);
+      // Prepare another plan to perform a DFT from V2 vector to OUT2 complex vector
+      fftw_plan pin2 = fftw_plan_dft_r2c_1d(NSteps, v2->data, out2, FFTW_MEASURE);
+      memset(out2,0,sizeof (fftw_complex)*NSteps); 
+
+      // Select the proper column and perform the current plan
+      gsl_vector_view NuCol = gsl_matrix_column(iMatrix,nu);
+      gsl_vector_memcpy(v2,&NuCol.vector);
       fftw_execute(pin2);
-
-
     
-    } 
+      // Prepare a third plan to perform an IFT from OUT3 complex vector to V3 vector
+      fftw_plan pout = fftw_plan_dft_c2r_1d(NSteps, out3, v3->data, FFTW_MEASURE);
+      memset(out3,0,sizeof (fftw_complex)*NSteps); 
 
-  }     
-  // TODO: Split the matrix into cols. Each col is a different double *in;
+      // Compute the pointwise product OUT3=OUT1*OUT2^* 
+      // OUT1 = a1 + b1*I (OUT1[0] = a1, OUT1[1] = b1)
+      // OUT2 = a2 + b2*I (OUT2[0] = a2, OUT2[1] = b2)
+      // OUT3 = (a1*a2 + b1*b2) + (-a1*b2 + a2*b1)I
+      for (int i=0;i<NSteps;i++)
+      {
+        out3[i][0] =  out1[i][0]*out2[i][0] + out1[i][1]*out2[i][1];
+        out3[i][1] = -out1[i][0]*out2[i][1] + out1[i][1]*out2[i][0];
+      }
+      gsl_vector_set_zero(v3);
 
-  // TODO: Loop. Foreach pair *in1, *in2;
+      // Execute the plan
+      fftw_execute(pout);
 
-  // INIT FFTW3 WORKPLACE
-  
-  fftw_complex * out1, out2;
-  fftw_plan      pin, pout;
+      // Each FFT transformation introduces a scale factor of NSteps
+      // We fix that by scaling the output vector properly
+      gsl_vector_scale(v3,1.0/((double)NSteps*NSteps));
 
-  // TODO: Multiply pin1*pin2=out3 (NOTE THAT THEY ARE COMPLEX VECTORS!) 
+      // Add the computed MU-NU cross-correlation to the proper column
+      // of the output matrix
+      gsl_vector_view MuNuCol = gsl_matrix_column(CCFMatrix,NNodes*mu+nu);
+      gsl_vector_memcpy(&MuNuCol.vector,v3);
+      
+      fftw_destroy_plan(pin2);
+      fftw_destroy_plan(pout);
+    }
+    fftw_destroy_plan(pin1);
+  }
 
-  pout = fftw_plan_dft_c2r_1d(int N, fftw_complex *out3, double *out, unsigned flags);
-
-  // TODO: Print the correlation
-  // TODO: Check the normalization
+  #if __BINARY_OUTPUT__
+    // PRINT CROSS CORRELATION MATRIX
+    PrintMsg("Saving output matrix in binary form");
+    sprintf(str, "./%s", oFileStr);
+    printf("\tOutput file: %s\n", str);
+    FILE *oFile;
+    oFile = fopen(str, "w");
+      gsl_matrix_fwrite(oFile,CCFMatrix);
+    fclose(oFile);
+  #else
+    // PRINT CROSS CORRELATION MATRIX
+    PrintMsg("Saving output matrix in plain text form");
+    sprintf(str, "./%s", oFileStr);
+    printf("\tOutput file: %s\n", str);
+    FILE *oFile;
+    oFile = fopen(str, "w");
+      for (int i=0;i<CCFMatrix->size1;i++)
+      {
+        for (int j=0;j<CCFMatrix->size2;j++)
+          fprintf(oFile, "%10.5e\t",gsl_matrix_get(CCFMatrix,i,j));
+        fprintf(oFile, "\n");
+      }
+    fclose(oFile);
+  #endif
 
   // FREE MEMORY
-  
-  fftw_free(out);
+  fftw_free(out1);
+  fftw_free(out2);
+  fftw_free(out3);
+ 
+  gsl_vector_free(v1);
+  gsl_vector_free(v2);
+  gsl_vector_free(v3);
 
-  gsl_matrix_free(Input);
+  gsl_matrix_free(  iMatrix);
+  gsl_matrix_free(CCFMatrix);
 
-  PrintMsg("EOF");
-
+  PrintMsg("EOF. How about a nice game of chess?");
   return 0;
 }

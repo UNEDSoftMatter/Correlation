@@ -1,5 +1,5 @@
 CC       := gcc 
-LIBS     := -lm -lblas -llapack -Wall -lgsl -lgslcblas -fopenmp -lfftw3 -O2 
+LIBS     := -lm -lblas -llapack -Wall -lgsl -lgslcblas -fopenmp -lfftw3 -O3 
 DEBUGGER := -O0 -ggdb
 FLAGS    := -std=gnu99
 TARGET   := ./../correlation
