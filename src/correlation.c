@@ -3,7 +3,7 @@
  *
  * Created    : 09.05.2016
  *
- * Modified   : jue 23 jun 2016 17:54:05 CEST
+ * Modified   : mié 29 jun 2016 17:23:48 CEST
  *
  * Author     : jatorre
  *
@@ -25,19 +25,36 @@ int main(int argc, char * argv[])
   char str[100]; 
   memset(str, '\0',sizeof(str));
 
-  // char * filestr = argv[1];
+  char * f1 = argv[1];
+  char * f2 = argv[2];
   
   PrintMsg("INIT");
   
-  gsl_matrix *   iMatrix  = gsl_matrix_calloc (NSteps,NNodes);
-  gsl_matrix * CCFMatrix  = gsl_matrix_calloc (NSteps,NNodes*NNodes);
+  gsl_matrix *  iMatrix1 = gsl_matrix_calloc (NSteps,NNodes);
+  gsl_matrix *  iMatrix2 = gsl_matrix_calloc (NSteps,NNodes);
+  gsl_matrix * CCFMatrix = gsl_matrix_calloc (NSteps,NNodes*NNodes);
   
-  PrintMsg("Reading input matrix");
-  sprintf(str, "./%s", iFileStr);
-  printf("\tInput file: %s\n", str);
+  PrintMsg("Reading input matrices");
   FILE *iFile;
-    iFile = fopen(str, "r");
-    gsl_matrix_fscanf(iFile,iMatrix);
+  
+  sprintf(str, "./%s", f1);
+  printf("\tInput file: %s\n", str);
+  iFile = fopen(str, "r");
+  #if __BINARY_OUTPUT__
+    gsl_matrix_fread(iFile,iMatrix1);
+  #else
+    gsl_matrix_fscanf(iFile,iMatrix1);
+  #endif
+  fclose(iFile);
+
+  sprintf(str, "./%s", f2);
+  printf("\tInput file: %s\n", str);
+  iFile = fopen(str, "r");
+  #if __BINARY_OUTPUT__
+    gsl_matrix_fread(iFile,iMatrix2);
+  #else
+    gsl_matrix_fscanf(iFile,iMatrix2);
+  #endif
   fclose(iFile);
 
   // Define auxiliar vectors needed to perform DFT
@@ -72,7 +89,7 @@ int main(int argc, char * argv[])
     memset(out1,0,sizeof (fftw_complex)*NSteps); 
 
     // Select the proper column and perform the current plan
-    gsl_vector_view MuCol = gsl_matrix_column(iMatrix,mu);
+    gsl_vector_view MuCol = gsl_matrix_column(iMatrix1,mu);
     gsl_vector_memcpy(v1,&MuCol.vector);
     fftw_execute(pin1);
    
@@ -84,7 +101,7 @@ int main(int argc, char * argv[])
       memset(out2,0,sizeof (fftw_complex)*NSteps); 
 
       // Select the proper column and perform the current plan
-      gsl_vector_view NuCol = gsl_matrix_column(iMatrix,nu);
+      gsl_vector_view NuCol = gsl_matrix_column(iMatrix2,nu);
       gsl_vector_memcpy(v2,&NuCol.vector);
       fftw_execute(pin2);
     
@@ -133,9 +150,9 @@ int main(int argc, char * argv[])
   #else
     // PRINT CROSS CORRELATION MATRIX
     PrintMsg("Saving output matrix in plain text form");
-    sprintf(str, "./%s", oFileStr);
+    sprintf(str, "./A%s", oFileStr);
     printf("\tOutput file: %s\n", str);
-    FILE *oFile;
+    // FILE *oFile;
     oFile = fopen(str, "w");
       for (int i=0;i<CCFMatrix->size1;i++)
       {
@@ -155,7 +172,8 @@ int main(int argc, char * argv[])
   gsl_vector_free(v2);
   gsl_vector_free(v3);
 
-  gsl_matrix_free(  iMatrix);
+  gsl_matrix_free( iMatrix1);
+  gsl_matrix_free( iMatrix2);
   gsl_matrix_free(CCFMatrix);
 
   PrintMsg("EOF. How about a nice game of chess?");
