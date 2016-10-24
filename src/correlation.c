@@ -3,7 +3,7 @@
  *
  * Created    : 09.05.2016
  *
- * Modified   : mié 29 jun 2016 17:23:48 CEST
+ * Modified   : lun 24 oct 2016 09:12:14 CEST
  *
  * Author     : jatorre
  *
@@ -91,6 +91,9 @@ int main(int argc, char * argv[])
     // Select the proper column and perform the current plan
     gsl_vector_view MuCol = gsl_matrix_column(iMatrix1,mu);
     gsl_vector_memcpy(v1,&MuCol.vector);
+    // Substract the mean value (i.e., compute the FFT of the deviations)
+    double v1mean = gsl_stats_mean(v1->data,v1->stride,NSteps);
+    gsl_vector_add_constant(v1,-v1mean);
     fftw_execute(pin1);
    
     // LOOP AGAIN OVER ALL NU-COLUMNS
@@ -103,6 +106,9 @@ int main(int argc, char * argv[])
       // Select the proper column and perform the current plan
       gsl_vector_view NuCol = gsl_matrix_column(iMatrix2,nu);
       gsl_vector_memcpy(v2,&NuCol.vector);
+      // Substract the mean value (i.e., compute the FFT of the deviations)
+      double v2mean = gsl_stats_mean(v2->data,v2->stride,NSteps);
+      gsl_vector_add_constant(v2,-v2mean);
       fftw_execute(pin2);
     
       // Prepare a third plan to perform an IFT from OUT3 complex vector to V3 vector

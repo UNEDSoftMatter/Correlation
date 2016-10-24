@@ -29,6 +29,7 @@
 #include <gsl/gsl_complex_math.h>
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_vector.h>
+#include <gsl/gsl_statistics_double.h>
 
 /* #############################################################################
 #  Parameters of the simulation 
