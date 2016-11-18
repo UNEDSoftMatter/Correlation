@@ -3,7 +3,7 @@
  *
  * Created    : 09.05.2016
  *
- * Modified   : lun 24 oct 2016 09:12:14 CEST
+ * Modified   : vie 18 nov 2016 10:28:18 CET
  *
  * Author     : jatorre
  *
@@ -17,10 +17,6 @@ int main(int argc, char * argv[])
   PrintInitInfo();
 
   PrintMsg("INIT");
-
-  //   // Checkpoint: We need an input filename
-  //   if (CheckInput(argc))
-  //     return 1;
 
   char str[100]; 
   memset(str, '\0',sizeof(str));
@@ -147,7 +143,7 @@ int main(int argc, char * argv[])
   #if __BINARY_OUTPUT__
     // PRINT CROSS CORRELATION MATRIX
     PrintMsg("Saving output matrix in binary form");
-    sprintf(str, "./%s", oFileStr);
+    sprintf(str, "./FFT-cf-%s-%s.dat", f1, f2);
     printf("\tOutput file: %s\n", str);
     FILE *oFile;
     oFile = fopen(str, "w");
@@ -156,11 +152,12 @@ int main(int argc, char * argv[])
   #else
     // PRINT CROSS CORRELATION MATRIX
     PrintMsg("Saving output matrix in plain text form");
-    sprintf(str, "./A%s", oFileStr);
+    sprintf(str, "./FFT-cf-%s-%s.dat", f1, f2);
     printf("\tOutput file: %s\n", str);
-    // FILE *oFile;
+    FILE *oFile;
     oFile = fopen(str, "w");
-      for (int i=0;i<CCFMatrix->size1;i++)
+      // By using FFT, total length of the correlation function is NSteps/2
+      for (int i=0;i<CCFMatrix->size1/2;i++)
       {
         for (int j=0;j<CCFMatrix->size2;j++)
           fprintf(oFile, "%10.5e\t",gsl_matrix_get(CCFMatrix,i,j));
