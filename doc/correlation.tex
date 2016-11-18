@@ -1,0 +1,84 @@
+% /*
+%  * Filename   : correlation.tex
+%  *
+%  * Created    : 18.11.2016
+%  *
+%  * Modified   : vie 18 nov 2016 17:21:58 CET
+%  *
+%  * Author     : jatorre
+%  *
+%  * Compile    :  
+%  *
+%  * Purpose    :  
+%  *
+%  */
+
+\documentclass{article}
+\usepackage{amsmath}
+\title{Correlation functions and FFT}
+\author{J. A. de la Torre}
+\date{\today}
+\begin{document}
+\maketitle
+
+\section{The time correlation function}
+We define the time correlation function of a signal $x(t)$ as
+\begin{align}
+  C(\tau) &= \left< x x(\tau)\right> = \frac{1}{T}\int_0^{T} dt\, x(t) x(t-\tau).
+\end{align}
+
+Let us suppose the following signal
+\begin{align}
+  x(t)&= \sin \left( \frac{2 \pi t}{T} \right)
+\end{align}
+
+The time correlation function is
+\begin{align}
+  C(\tau) &= \frac{1}{T} \int_0^{T} dt\,\sin \left( \frac{2 \pi t}{T} \right)\sin \left( \frac{2 \pi (t-\tau)}{T} \right) 
+\end{align}
+
+We use the property
+\begin{align}
+  \sin a \sin b &= \frac{1}{2} \left( \cos(a-b) - \cos (a+b) \right)
+\end{align}
+so that
+\begin{align}
+  C(\tau) &= \frac{1}{2} \frac{1}{T} \int_0^T dt\, \cos \left(\frac{2 \pi \tau}{T} \right)
+           - \frac{1}{2} \frac{1}{T} \int_0^T dt\, \cos \left(\frac{4 \pi t}{T} - \frac{2 \pi \tau}{T} \right) \\
+           &=\frac{1}{2} \frac{1}{T} \cos \left(\frac{2\pi \tau}{T}\right)  \int_{0}^{T} dt
+           - \frac{1}{2} \frac{1}{T} \left. \frac{T}{4\pi} \sin \left(\frac{4\pi t}{T} - \frac{2\pi \tau}{T}\right) \right|_{0}^{T} \\
+           &= \frac{1}{2} \cos \left( \frac{2 \pi \tau}{T} \right)
+\end{align}
+
+Let us compute the correlation between two signals
+\begin{align}
+  x(t)&= \sin \left( \frac{2 \pi t}{T} \right) \\
+  y(t)&= \sin \left( \frac{4 \pi t}{T} \right)
+\end{align}
+so that
+\begin{align}
+  C(\tau) &= \left< x y(\tau) \right> \\
+          &= \frac{1}{T}\int_0^{T} dt\, x(t) y(t-\tau) \\
+          &= \frac{1}{2} \frac{1}{T} \int_0^T dt\, \cos\left( \frac{-2\pi t}{T} + \frac{2 \pi \tau}{T} \right)
+           - \frac{1}{2} \frac{1}{T} \int_0^T dt\, \cos\left( \frac{ 6\pi t}{T} - \frac{2 \pi \tau}{T} \right) \\
+           &=\frac{1}{2} \frac{1}{T} \left. \frac{-T}{2\pi} \sin \left(  \frac{-2\pi t}{T}- \frac{2 \pi \tau}{T} \right) \right|_{0}^{T}
+             - \frac{1}{2} \frac{1}{T} \left. \frac{T}{6\pi} \sin \left(  \frac{6\pi t}{T}- \frac{2 \pi \tau}{T} \right) \right|_{0}^{T} \\
+           &= 0
+\end{align}
+
+\section{Time correlation function using Fourier Transform}
+Formally, time correlation function is defined as
+\begin{align}
+  C(\tau) &= \left< x x(\tau)\right> = \frac{1}{T}\int_0^{T} dt\, x(t) x(t-\tau).
+\end{align}
+
+\subsection{The continous Fourier Transform}
+\subsection{The discrete Fourier Transform}
+\begin{align}
+  X_k &= \sum_{j=0}^{N-1} x_j e^{-2 \pi i j k / N} \\
+  x_j &= \sum_{k=0}^{N-1} X_k e^{ 2 \pi i j k / N}
+\end{align}
+\subsection{Fast Fourier Transform}
+
+
+\end{document}
