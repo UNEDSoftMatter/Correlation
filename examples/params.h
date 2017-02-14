@@ -12,8 +12,8 @@
 
 // If __SUBSTRACT_AVG == true, then FFT of the deviations with respect to the mean
 // will be computed, i.e.,
-// < (x-\overline{x})(x(t)-\overline{x}) >
+// < (x-\overline{x})(y(t)-\overline{y}) >
 // If __SUBSTRACT_AVG == false, then FFT will be computed, i.e.,
-// < x x(t) >
+// < x y(t) >
 
 #define __SUBSTRACT_AVG__ false
