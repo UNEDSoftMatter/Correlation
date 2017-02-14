@@ -3,7 +3,7 @@
  *
  * Created    : 09.05.2016
  *
- * Modified   : vie 18 nov 2016 10:28:18 CET
+ * Modified   : mar 14 feb 2017 10:31:01 CET
  *
  * Author     : jatorre
  *
@@ -88,8 +88,10 @@ int main(int argc, char * argv[])
     gsl_vector_view MuCol = gsl_matrix_column(iMatrix1,mu);
     gsl_vector_memcpy(v1,&MuCol.vector);
     // Substract the mean value (i.e., compute the FFT of the deviations)
-    double v1mean = gsl_stats_mean(v1->data,v1->stride,NSteps);
-    gsl_vector_add_constant(v1,-v1mean);
+    #if __SUBSTRACT_AVG__
+      double v1mean = gsl_stats_mean(v1->data,v1->stride,NSteps);
+      gsl_vector_add_constant(v1,-v1mean);
+    #endif
     fftw_execute(pin1);
    
     // LOOP AGAIN OVER ALL NU-COLUMNS
@@ -103,8 +105,10 @@ int main(int argc, char * argv[])
       gsl_vector_view NuCol = gsl_matrix_column(iMatrix2,nu);
       gsl_vector_memcpy(v2,&NuCol.vector);
       // Substract the mean value (i.e., compute the FFT of the deviations)
-      double v2mean = gsl_stats_mean(v2->data,v2->stride,NSteps);
-      gsl_vector_add_constant(v2,-v2mean);
+      #if __SUBSTRACT_AVG__
+        double v2mean = gsl_stats_mean(v2->data,v2->stride,NSteps);
+        gsl_vector_add_constant(v2,-v2mean);
+      #endif
       fftw_execute(pin2);
     
       // Prepare a third plan to perform an IFT from OUT3 complex vector to V3 vector
