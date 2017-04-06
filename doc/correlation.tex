@@ -3,7 +3,7 @@
 %  *
 %  * Created    : 18.11.2016
 %  *
-%  * Modified   : jue  6 abr 12:04:37 2017
+%  * Modified   : jue  6 abr 12:07:41 2017
 %  *
 %  * Author     : jatorre
 %  *
@@ -76,8 +76,8 @@ We compute, on one hand
 \begin{align}
   \frac{1}{T} \int_0^T dt\, x(t) y(t-\tau) &=
   \frac{1}{T} \int_0^T dt\, \sin\left( \frac{2\pi t}{T}\right) \sin\left( \frac{3\pi (t-\tau)}{T}\right) \\
-  &= \frac{1}{2T} dt\, \cos \left( \frac{-\pi t}{T} + \frac{3\pi \tau}{T}\right)
-  -  \frac{1}{2T} dt\, \cos \left( \frac{5\pi t}{T} - \frac{3\pi \tau}{T}\right) \\
+  &= \frac{1}{2T} \int_0^T dt\, \cos \left( \frac{-\pi t}{T} + \frac{3\pi \tau}{T}\right)
+  -  \frac{1}{2T} \int_0^T dt\, \cos \left( \frac{5\pi t}{T} - \frac{3\pi \tau}{T}\right) \\
   &= 
   -\frac{1}{2\pi} \left[
     \sin\left(-\pi + \frac{3\pi\tau}{T} \right)
@@ -103,8 +103,8 @@ Note that this is {\bf different} from, on the other hand,
 \begin{align}
   \frac{1}{T} \int_0^T dt\, x(t-\tau) y(t) &=
   \frac{1}{T} \int_0^T dt\, \sin\left( \frac{2\pi (t-\tau}{T}\right) \sin\left( \frac{3\pi t}{T}\right) \\
-  &= \frac{1}{2T} dt\, \cos \left( \frac{-\pi t}{T} - \frac{2\pi \tau}{T}\right)
-  -  \frac{1}{2T} dt\, \cos \left( \frac{5\pi t}{T} - \frac{2\pi \tau}{T}\right) \\
+  &= \frac{1}{2T} \int_0^T dt\, \cos \left( \frac{-\pi t}{T} - \frac{2\pi \tau}{T}\right)
+  -  \frac{1}{2T} \int_0^T dt\, \cos \left( \frac{5\pi t}{T} - \frac{2\pi \tau}{T}\right) \\
   &= 
   -\frac{1}{2\pi} \left[
     \sin\left(-\pi - \frac{2\pi\tau}{T} \right)
