@@ -3,7 +3,7 @@
 %  *
 %  * Created    : 18.11.2016
 %  *
-%  * Modified   : jue  6 abr 12:07:41 2017
+%  * Modified   : mar 18 abr 2017 12:53:27 CEST
 %  *
 %  * Author     : jatorre
 %  *
@@ -25,16 +25,17 @@
 \section{The time correlation function}
 We define the time autocorrelation function of a signal $x(t)$ as
 \begin{align}
-  C(\tau) &= \left< x x(\tau)\right> = \frac{1}{T}\int_0^{T} dt\, x(t) x(t-\tau).
+  C(\tau) &= \left< x x(\tau)\right> = \frac{1}{T}\int_0^{T} dt\, x(t) x(t-\tau),
 \end{align}
+wher $T$ is the total length of the signal.
 
-\subsection*{Autocorrelation}
-Let us suppose the following signal
+\subsection*{Example 1. Autocorrelation}
+Let us suppose the following function
 \begin{align}
   x(t)&= \sin \left( \frac{2 \pi t}{T} \right)
 \end{align}
 
-Its time autocorrelation function is
+Its time autocorrelation function over a whole period $T$ is
 \begin{align}
   C(\tau) &= \frac{1}{T} \int_0^{T} dt\,\sin \left( \frac{2 \pi t}{T} \right)\sin \left( \frac{2 \pi (t-\tau)}{T} \right) 
 \end{align}
@@ -48,13 +49,12 @@ By using Property~\ref{eq:sinasinb} we have
            &= \frac{1}{2} \cos \left( \frac{2 \pi \tau}{T} \right)
 \end{align}
 
-\subsection*{Cross correlation}
-Let us compute the correlation between two signals
+\subsection*{Example 2. Cross correlation of two functions with different periods}
+Let us compute the correlation between two functions
 \begin{align}
-  x(t)&= \sin \left( \frac{2 \pi t}{T} \right) \\
-  y(t)&= \sin \left( \frac{4 \pi t}{T} \right)
+  x(t)&= \sin \left( \frac{2 \pi t}{T} \right)\,\quad &  y(t)&= \sin \left( \frac{4 \pi t}{T} \right)
 \end{align}
-so that
+so that the function $y(t)$ has a period $T'= \frac{1}{2}T$, being $T$ the period of $x(t)$. If we compute the time cross correlation between these two functions {\em over a period} $T$ we have
 \begin{align}
   C(\tau) &= \left< x y(\tau) \right> \\
           &= \frac{1}{T}\int_0^{T} dt\, x(t) y(t-\tau) \\
@@ -65,14 +65,12 @@ so that
            &= 0
 \end{align}
 
-
-\subsection*{Another cross correlation}
+\subsection*{Example 3. Cross correlation of two functions with different periods}
 Let us suppose 
 \begin{align}
-  x(t) &= \sin\left( \frac{2\pi t}{T}\right)\,\quad & y(t) &= \sin\left( \frac{3\pi t}{T}\right)
+  x(t) &= \sin\left( \frac{2\pi t}{T}\right)\,\quad & y(t) &= \sin\left( \frac{3\pi t}{T}\right).
 \end{align}
-
-We compute, on one hand
+Again, that the function $y(t)$ has a period $T'= \frac{2}{3}T$, being $T$ the period of $x(t)$. If we compute the time cross correlation between these two functions {\em over a period} $T$ we have, on one hand,
 \begin{align}
   \frac{1}{T} \int_0^T dt\, x(t) y(t-\tau) &=
   \frac{1}{T} \int_0^T dt\, \sin\left( \frac{2\pi t}{T}\right) \sin\left( \frac{3\pi (t-\tau)}{T}\right) \\
@@ -102,7 +100,7 @@ where we used Properties \ref{eq:sinx-pi}, \ref{eq:sinpi-x}, and \ref{eq:sinimpa
 Note that this is {\bf different} from, on the other hand, 
 \begin{align}
   \frac{1}{T} \int_0^T dt\, x(t-\tau) y(t) &=
-  \frac{1}{T} \int_0^T dt\, \sin\left( \frac{2\pi (t-\tau}{T}\right) \sin\left( \frac{3\pi t}{T}\right) \\
+  \frac{1}{T} \int_0^T dt\, \sin\left( \frac{2\pi (t-\tau)}{T}\right) \sin\left( \frac{3\pi t}{T}\right) \\
   &= \frac{1}{2T} \int_0^T dt\, \cos \left( \frac{-\pi t}{T} - \frac{2\pi \tau}{T}\right)
   -  \frac{1}{2T} \int_0^T dt\, \cos \left( \frac{5\pi t}{T} - \frac{2\pi \tau}{T}\right) \\
   &= 
@@ -125,6 +123,33 @@ where we again used Properties \ref{eq:sinx-pi}, \ref{eq:sinpi-x}, and \ref{eq:s
  -\frac{6}{5\pi} 
     \sin\left(\frac{2\pi\tau}{T} \right)
 \end{align}
+
+\subsection*{Example 4. Cross correlation of two function with the same period}
+Let us suppose 
+\begin{align}
+  x(t) &= \sin\left( \frac{2\pi t}{T}\right)\,\quad & y(t) &= \cos \left( \frac{2\pi t}{T} \right) = \sin\left( \frac{2\pi t}{T} + \frac{\pi}{2}\right)
+\end{align}
+
+We compute, on one hand
+\begin{align}
+  \frac{1}{T} \int_0^T dt\, x(t) y(t-\tau) &=
+  \frac{1}{T} \int_0^T dt\, \sin\left( \frac{2\pi t}{T}\right) \cos\left( \frac{2\pi (t-\tau)}{T}\right) \\
+  &= \frac{1}{2T} \int_0^T dt\, \sin \left( \frac{2 \pi \tau}{T} \right)
+  +  \frac{1}{2T} \int_0^T dt\, \sin \left( \frac{4\pi t}{T} - \frac{2\pi \tau}{T}\right) \\
+  &= \frac{1}{2} \sin\left(\frac{2\pi\tau}{T} \right)
+\end{align}
+where we used Property \ref{eq:sinacosb}.
+
+Note that this is {\bf different} from, on the other hand, 
+\begin{align}
+  \frac{1}{T} \int_0^T dt\, x(t-\tau) y(t) &=
+  \frac{1}{T} \int_0^T dt\, \sin\left( \frac{2\pi (t-\tau)}{T}\right) \cos\left( \frac{2\pi t}{T}\right) \\
+  &= \frac{1}{2T} \int_0^T dt\, \sin \left( - \frac{2\pi \tau}{T}\right)
+  +  \frac{1}{2T} \int_0^T dt\, \sin \left( \frac{4\pi t}{T} - \frac{2\pi \tau}{T}\right) \\
+  &= \frac{1}{2} \sin\left(\frac{-2\pi\tau}{T} \right) \\
+  &= -\frac{1}{2} \sin\left(\frac{2\pi\tau}{T} \right) 
+\end{align}
+where we again used Properties \ref{eq:sinacosb} and \ref{eq:sinimpar} in the last step.
 
 % \section{Time correlation function using Fourier Transform}
 % Formally, time correlation function is defined as
@@ -149,6 +174,9 @@ where we again used Properties \ref{eq:sinx-pi}, \ref{eq:sinpi-x}, and \ref{eq:s
   \sin a \sin b &= \frac{1}{2}\left[ 
   \cos(a-b) - \cos(a+b)
 \right]\label{eq:sinasinb} \\
+  \sin a \cos b &= \frac{1}{2}\left[ 
+  \sin(a-b) + \sin(a+b)
+\right]\label{eq:sinacosb} \\
 \sin(x-\pi) &= -\sin x \label{eq:sinx-pi} \\
 \sin(\pi-x) &= \sin x \label{eq:sinpi-x} \\
 \sin(x) &= - \sin(-x) \label{eq:sinimpar}
